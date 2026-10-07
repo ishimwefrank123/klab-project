@@ -21,6 +21,13 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    resetCode: {
+    type: String,
+    },
+
+    resetCodeExpires: {
+        type: Date,
+    },
   },
   {
     timestamps: true,

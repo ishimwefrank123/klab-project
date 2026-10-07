@@ -108,25 +108,37 @@ export const forgotPassword = async (req: Request, res: Response) => {
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-  const {email, code, newPassword} = req.body;
+  const { email, code, newPassword } = req.body;
 
-  if(!email || !code || !newPassword){
-    return res.status(400).json({message: "Email, code and newPassword are requied"});
+  if (!email || !code || !newPassword) {
+    return res.status(400).json({
+      message: "Email, code and newPassword are required"
+    });
   }
+
+  const cleanCode = String(code).trim();
+  const hashedCode = hashCode(cleanCode);
+
   const user = await User.findOne({
     email,
-    resetCode: hashCode(String(code)),
-    resetCodeExpires: {$gt: new Date()},
+    resetCode: hashedCode,
+    resetCodeExpires: { $gt: new Date() },
   });
 
-  if(!user){
-    return res.status(400).json({message: "Invalid or expired code"});
+  if (!user) {
+    return res.status(400).json({
+      message: "Invalid or expired code"
+    });
   }
 
-  user.password = await bcrypt.hash(newPassword ,10);
+  user.password = await bcrypt.hash(newPassword, 10);
+
   user.resetCode = undefined;
   user.resetCodeExpires = undefined;
+
   await user.save();
 
-  res.json({message: "Password reset successful, you can now log in"})
-}
+  res.json({
+    message: "Password reset successful, you can now log in"
+  });
+};
