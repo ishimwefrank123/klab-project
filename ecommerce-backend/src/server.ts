@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes";
 import swaggerSpec from "./config/swagger";
 import connectDB from "./config/database";
 import orderRoutes from "./routes/order.route"
+import categoryRoutes from "./routes/categoryRoutes";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -29,6 +30,9 @@ app.use("/api/products", productRoutes);
 
 //Order routes
 app.use('/api/orders', orderRoutes);
+
+// Category routes
+app.use("/api/categories", categoryRoutes);
 
 // Auth routes
 app.use("/api/auth", authRoutes);

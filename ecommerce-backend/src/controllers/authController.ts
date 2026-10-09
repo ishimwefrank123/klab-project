@@ -19,7 +19,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password , role} = req.body;
 
-    const userExists = await User.findOne({ email });
+    if (!name || !email || !password) {
+      res.status(400).json({ message: "Please provide name, email, and password" });
+      return;
+    }
+
+    console.log(email)
+
+    const userExists = await User.findOne({email});
 
     if (userExists) {
       res.status(400).json({ message: "User already exists" });

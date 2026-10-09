@@ -36,7 +36,7 @@ const ProductSchema: Schema = new Schema<IProduct>(
     },
     imageUrl:{
       type: String,
-      required: true,
+      default: "image.jpg"
     }
   },
   {

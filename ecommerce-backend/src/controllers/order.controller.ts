@@ -1,38 +1,37 @@
 import mongoose from "mongoose";
-import {Response} from 'express';
+import { Response } from 'express';
 import { Order } from "../models/order.model";
-import {Product} from "../models/Product";
-import {AuthRequest} from "../middleware/authMiddleware";
-import  * as emailService from "../services/emailService";
+import Product from "../models/Product";
+import { AuthRequest } from "../middleware/authMiddleware";
+import * as emailService from "../services/emailService";
 export const createOrder = async (req: AuthRequest, res: Response) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    try{
-        const {products} = req.body;
+    try {
+        const { products } = req.body;
         const userId = req.user?.id;
+        const userEmail = req.user?.email;
+        const userName = req.user?.name;
 
         let totalAmount = 0;
         const orderProducts = [];
 
         //check stock and calculate total
-        for(const item of products){
+        for (const item of products) {
             const product = await Product.findById(item.productId).session(session);
 
-            if(!product){
+            if (!product) {
                 throw new Error(`Product ${item.productId} not found`);
             }
 
-            if(product.quantity < item.quantity){
+            if (product.stock < item.quantity) {
                 throw new Error(`Insufficient stock for ${product.name}`);
             }
 
-            //update product quantity
-            product.quantity -= item.quantity;
-            if(product.quantity === 0){
-                product.stock = false;
-            }
-            await product.save({session});
+            //update product stock
+            product.stock -= item.quantity;
+            await product.save({ session });
 
             orderProducts.push({
                 product: product._id,
@@ -44,18 +43,18 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
         }
 
         //Create order
-        const order= await Order.create([{
+        const order = await Order.create([{
             user: userId,
             products: orderProducts,
             totalAmount,
             status: 'pending'
-        }], {session});
+        }], { session });
 
         //Commit transaction
         await session.commitTransaction();
 
         // Send order Confirmation Email
-        if(userEmail){
+        if (userEmail) {
             emailService.sendOrderConfirmationEmail(
                 userEmail,
                 userName,
@@ -66,10 +65,10 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
         res.status(201).json({
             success: true,
-            message: 'Order created successfully', 
+            message: 'Order created successfully',
             data: order[0]
         });
-    }catch(error: any){
+    } catch (error: any) {
         //Rollback transaction on error
         await session.abortTransaction();
 
@@ -77,7 +76,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
             success: false,
             message: error.message
         });
-    }finally{
+    } finally {
         session.endSession();
     };
 };
@@ -85,14 +84,14 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 // Get logged in user's orders
 
 export const getUserOrders = async (req: AuthRequest, res: Response) => {
-    try{
-        const orders = await Order.find({user: req.user?.id}).populate('products.product', 'name price');
+    try {
+        const orders = await Order.find({ user: req.user?.id }).populate('products.product', 'name price');
 
         res.status(200).json({
             success: true,
             data: orders,
         });
-    }catch(error: any){
+    } catch (error: any) {
         res.status(400).json({
             success: false,
             message: error.message
@@ -101,17 +100,17 @@ export const getUserOrders = async (req: AuthRequest, res: Response) => {
 }
 
 // Get order by ID
-export const getOrderById = async (req: AuthRequest, res: Response): Promise<void> =>{
-    try{
-        const order = await Order.findById(req.params.id).populate('products.product','name price');
+export const getOrderById = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const order = await Order.findById(req.params.id).populate('products.product', 'name price');
 
-        if(!order){
-            res.status(404).json({success: false, message: 'order not found'});
+        if (!order) {
+            res.status(404).json({ success: false, message: 'order not found' });
             return;
         }
 
         //Make sure the user only fetches their own order 
-        if(order.user.toString() !== req.user?.id){
+        if (order.user.toString() !== req.user?.id) {
             res.status(401).json({
                 success: false,
                 message: 'Not authorized to view this order'
@@ -123,7 +122,7 @@ export const getOrderById = async (req: AuthRequest, res: Response): Promise<voi
             success: true,
             data: order
         });
-    }catch(error: any){
+    } catch (error: any) {
         res.status(500).json({
             success: false,
             message: error.message
