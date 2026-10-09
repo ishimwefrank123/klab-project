@@ -6,6 +6,7 @@ import productRoutes from "./routes/productRoutes";
 import authRoutes from "./routes/authRoutes";
 import swaggerSpec from "./config/swagger";
 import connectDB from "./config/database";
+import orderRoutes from "./routes/order.route"
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -25,6 +26,9 @@ app.get("/", (req, res) => {
 
 // Product routes
 app.use("/api/products", productRoutes);
+
+//Order routes
+app.use('/api/orders', orderRoutes);
 
 // Auth routes
 app.use("/api/auth", authRoutes);

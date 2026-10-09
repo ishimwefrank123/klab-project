@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/productController";
+import { protect, admin} from "../middleware/authMiddleware"
 
 const router = Router();
 
@@ -58,7 +59,7 @@ const router = Router();
  *       500:
  *         description: Some server error
  */
-router.post("/", createProduct);
+router.post("/", protect, admin, createProduct);
 
 /**
  * @swagger
@@ -130,7 +131,7 @@ router.get("/:id", getProductById);
  *       500:
  *         description: Some error happened
  */
-router.put("/:id", updateProduct);
+router.put("/:id", protect, admin, updateProduct);
 
 /**
  * @swagger
@@ -151,6 +152,6 @@ router.put("/:id", updateProduct);
  *       404:
  *         description: The product was not found
  */
-router.delete("/:id", deleteProduct);
+router.delete("/:id", protect, admin, deleteProduct);
 
 export default router;

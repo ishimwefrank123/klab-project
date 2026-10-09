@@ -17,7 +17,7 @@ const generateToken = (id: string): string => {
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password , role} = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -33,6 +33,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       name,
       email,
       password: hashedPassword,
+      role: role || 'buyer',
     });
 
     if (user) {
@@ -43,6 +44,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user.id),
       });
     } else {
@@ -64,6 +66,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user.id),
       });
     } else {

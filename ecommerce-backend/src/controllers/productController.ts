@@ -1,5 +1,25 @@
 import { Request, Response } from "express";
 import Product from "../models/Product";
+import cloudinary from "../config/cloudinary";
+
+const uploadToCloudinary = (
+  buffer: Buffer
+): Promise<any> => {
+  return new Promise((resolve, reject)=> {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "products",
+      },(error,result) => {
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
 
 // CREATE PRODUCT
 export const createProduct = async (

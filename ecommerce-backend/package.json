@@ -1,6 +1,9 @@
 {
   "name": "ecommerce-backend",
   "version": "1.0.0",
+  "type":"commonjs",
+  "moduleResolution": "node",
+  "target": "esnext",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,16 +14,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@getbrevo/brevo": "^6.0.3",
     "@prisma/client": "^7.10.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.4",
+    "multer": "^2.4.0",
     "nodemailer": "^10.0.15",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
@@ -30,6 +34,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.3.0",
     "@types/node": "^26.6.3",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",

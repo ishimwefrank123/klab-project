@@ -6,13 +6,15 @@ export interface IProduct extends Document {
   price: number;
   stock: number;
   category: string;
+  imageUrl: string;
 }
 
-const ProductSchema: Schema = new Schema(
+const ProductSchema: Schema = new Schema<IProduct>(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "name is required"],
+      index: true,
     },
     description: {
       type: String,
@@ -20,7 +22,8 @@ const ProductSchema: Schema = new Schema(
     },
     price: {
       type: Number,
-      required: true,
+      required: [true, "Price is required"],
+      index: true,
     },
     stock: {
       type: Number,
@@ -29,11 +32,23 @@ const ProductSchema: Schema = new Schema(
     category: {
       type: String,
       required: true,
+      index: true
     },
+    imageUrl:{
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,
   }
+  
 );
+
+//compound index for common query
+ProductSchema.index({category:1,price:1})
+ProductSchema.index({stock: 1, price: 1})
+
+ProductSchema.index({name:'text',category:'text'})
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

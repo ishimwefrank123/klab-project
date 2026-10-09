@@ -1,4 +1,5 @@
 import { brevo } from "../config/mail";
+import { orderConfirmationTemplate } from "../templates/orderConfirmation.template";
 import { welcomeEmailTemplate } from "../templates/welcome.template";
 
 const sendEmail = async (
@@ -64,3 +65,14 @@ export const sendWelcomeEmail = async (
 
     await sendEmail(to, subject, html);
 };
+
+export const sendOrderConfirmationEmail = async (
+    to: string,
+    userName : string,
+    orderId: string,
+    totalAmount: number
+) => {
+    const subject = "Order Confirmation - Thank you for your purchase!";
+    const html = orderConfirmationTemplate(userName, orderId, totalAmount);
+    await sendEmail(to, subject, html);
+}
